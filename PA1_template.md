@@ -1,34 +1,33 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-```{r echo=TRUE, message=FALSE}
+# Reproducible Research: Peer Assessment 1
+
+```r
 library(knitr)
 library(dplyr)
 library(lattice)
 ```
 
-```{r setoptions}
+
+```r
 opts_chunk$set(echo=TRUE)
 ```
 
 ## 1. Loading and preprocessing the data
-```{r loading}
+
+```r
 # Read the data from file
 activityData <- read.csv("./activity.csv") 
 ```
 
-```{r}
+
+```r
 # the dimensions of the data loaded
 d <- dim(activityData) 
 #names of columns
 columns <- names(activityData) 
 ```
 
-- The data read contains **`r d[1]` observations** in `r d[2]` columns. The columns names are:   
-**`r columns`**
+- The data read contains **17568 observations** in 3 columns. The columns names are:   
+**steps, date, interval**
 
 The details of the variables included in this dataset are:  
 - **steps**: Number of steps taking in a 5-minute interval  
@@ -36,8 +35,19 @@ The details of the variables included in this dataset are:
 - **interval**: Identifier for the 5-minute interval in which measurement was taken  
 
 The first few rows of the data:
-```{r}
+
+```r
 head(activityData)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 Transoformation and summarisation of data to simplify later computation and graph building   
@@ -45,7 +55,8 @@ Transoformation and summarisation of data to simplify later computation and grap
 - Compute the total steps per day    
 - Compute the average steps per interval across the days  
 
-```{r}
+
+```r
 #Convert the values in 'date' column to 'Date' objects
 activityData <- mutate(activityData, date=as.Date(date)) 
 #Work out the total steps per day with cases with missing values removed
@@ -58,14 +69,18 @@ avgStepsPerInterval <- summarise(group_by(activityData[complete.cases(activityDa
 
 ## 2. What is mean total number of steps taken per day?
 Visualisation of the data (with missing values removed) using a histogram  
-```{r computeMean}
+
+```r
 #Plot the histogram of total steps per day
 hist(totalStepsPerDay$totalSteps, breaks=10, xlab="Total steps per day",   
      main="Histogram of total steps per day with missing values removed") 
 ```
 
+![](PA1_template_files/figure-html/computeMean-1.png) 
+
 Computing the mean and median of the total steps per day with missing values removed
-```{r}
+
+```r
 # Average of total steps per day
 avg <- mean(totalStepsPerDay$totalSteps) 
 # Median of total steps per day
@@ -74,50 +89,57 @@ med <- median(totalStepsPerDay$totalSteps)
 decPoints <- 2
 ```
 
-- The mean of total number of steps taken per day, with missing values removed, is **`r format(avg, nsmall=decPoints)`**  
+- The mean of total number of steps taken per day, with missing values removed, is **10766.19**  
 
-- The median of total number of steps taken per day, with missing values removed, is **`r format(med, nsmall=decPoints)`**  
+- The median of total number of steps taken per day, with missing values removed, is **10765**  
 
 ## 3. What is the average daily activity pattern?
 Plotting average, across days, of the steps taken in each 5 minute interval  
 
-```{r}
+
+```r
 plot(avgStepsPerInterval$interval, avgStepsPerInterval$avgSteps, type="l", 
      main="Average steps, across days, in each 5 minute interval", 
      xlab="5 minute intervals (0, 5, 10 ...55, 105, 110, ...... 2355)", 
      ylab="Number of steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
 Which interval had the maximum number of steps?  
-```{r}
+
+```r
 maxStepInterval <- (avgStepsPerInterval[avgStepsPerInterval$avgSteps==
                                                max(avgStepsPerInterval$avgSteps),])[,1]
 maxStepIntervalVal <- (avgStepsPerInterval[avgStepsPerInterval$avgSteps==
                                                max(avgStepsPerInterval$avgSteps),])[,2]
 ```
 
-- The maximum number of steps, on average across the days, occured at the 5 minute interval starting **`r maxStepInterval`** with a value of **`r format(round(maxStepIntervalVal, 2), nsmall=decPoints)`**
+- The maximum number of steps, on average across the days, occured at the 5 minute interval starting **835** with a value of **206.17**
 
 ## 4. Imputing missing values
 There are a number of days/intervals where values for 'steps' are missing (values coded as NA ). The presence of missing days may introduce bias into some calculations or summaries of the data.  
 
-```{r imputeVals}
+
+```r
 missingValCount <- colSums(is.na(activityData)) #Work out the count of missing values
 ```
-The missing value count in each of the `r d[2]` columns are:   
-- `r missingValCount`.
+The missing value count in each of the 3 columns are:   
+- 2304, 0, 0.
 
 Filling in the missing values with appropriate values (imputing) can help in analysing and understanding the data better.  
 
 For the remaining part of this report the missing values are filled in using the average number of steps for the same interval across all days.  
 
-```{r}
+
+```r
 impActivityData <- merge(activityData, avgStepsPerInterval, by.x = 3, by.y = 1, all.x = TRUE)
 impActivityData = transform(impActivityData, steps = ifelse(is.na(steps), avgSteps, steps))
 ```
  
 Computing the total steps per day with the imputed data.  
-```{r}
+
+```r
 #Compute the total steps per day
 ImpTotalStepsPerDay <- summarise(group_by(impActivityData, date), 
                                  totalSteps=sum(steps, na.rm=TRUE)) 
@@ -125,7 +147,8 @@ ImpTotalStepsPerDay <- summarise(group_by(impActivityData, date),
 
 Visualisation of the data, with missing values imputed and with missing values removed (from earlier section), using histogram.  
 
-```{r fig.height=5, fig.width=10}
+
+```r
 par(mfrow=c(1,2))
 yLim <- c(0, 25)
 #Plot the histogram of total steps per day with missing values imputed
@@ -140,25 +163,29 @@ hist(totalStepsPerDay$totalSteps, breaks=10,
      ylim=yLim) 
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
+
 Computing the mean and median of the total steps per day with missing values imputed.  
-```{r}
+
+```r
 avgImp <- mean(ImpTotalStepsPerDay$totalSteps) # Average of total steps per day
 medImp <- median(ImpTotalStepsPerDay$totalSteps) #Median of total steps per day
 ```
 
 The mean of total number of steps taken per day:  
-- with missing values imputed - **`r format(avgImp, scientific=FALSE, nsmall=2)`**  
-- with missing values removed - **`r format(avg, scientific=FALSE, nsmall=2)`**  
-- difference between the two - **`r format(avgImp - avg, scientific=FALSE, nsmall=2)`**   
+- with missing values imputed - **10766.19**  
+- with missing values removed - **10766.19**  
+- difference between the two - **0.00**   
 
 
 The median of total number of steps taken per day:  
-- with missing values imputed - **`r format(medImp, scientific=FALSE, nsmall=2)`**  
-- with missing values removed - **`r format(med, scientific=FALSE, nsmall=2)`**  
-- difference between the two - **`r format(round(medImp - med, 2), scientific=FALSE, nsmall=2)`**   
+- with missing values imputed - **10766.19**  
+- with missing values removed - **10765**  
+- difference between the two - **1.19**   
 
 ## 5. Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 #Create a factor variable to identify the date as weekend of weekday
 impActivityData$weekDay <- as.factor(ifelse(weekdays(impActivityData$date) 
                                             %in% c("Sunday","Saturday"), "weekend", "weekday"))
@@ -169,9 +196,12 @@ avgStepsPerIntervalWday <- summarise(group_by(impActivityData, weekDay,
 
 - Plot of average steps per interval for weekdays and weekends with data imputed for missing values show the difference between activity on weekdays and weekends.  
 
-```{r}
+
+```r
 #Plot average steps per interval for weekdays and weekends
 xyplot(avgSteps~interval | weekDay, data=avgStepsPerIntervalWday, layout=c(1,2), type="l", 
        main="Average steps per interval for weekdays and weekends",
        ylab="Average steps", xlab="Interval")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
