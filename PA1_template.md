@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 ```r
 library(knitr)
@@ -76,7 +81,7 @@ hist(totalStepsPerDay$totalSteps, breaks=10, xlab="Total steps per day",
      main="Histogram of total steps per day with missing values removed") 
 ```
 
-![](PA1_template_files/figure-html/computeMean-1.png) 
+![plot of chunk computeMean](figure/computeMean-1.png) 
 
 Computing the mean and median of the total steps per day with missing values removed
 
@@ -104,7 +109,7 @@ plot(avgStepsPerInterval$interval, avgStepsPerInterval$avgSteps, type="l",
      ylab="Number of steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 Which interval had the maximum number of steps?  
 
@@ -163,7 +168,7 @@ hist(totalStepsPerDay$totalSteps, breaks=10,
      ylim=yLim) 
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 Computing the mean and median of the total steps per day with missing values imputed.  
 
@@ -204,4 +209,4 @@ xyplot(avgSteps~interval | weekDay, data=avgStepsPerIntervalWday, layout=c(1,2),
        ylab="Average steps", xlab="Interval")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
