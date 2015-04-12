@@ -17,7 +17,7 @@ opts_chunk$set(echo=TRUE)
 ## 1. Loading and preprocessing the data
 ```{r loading}
 # Read the data from file
-activityData <- read.csv("./activity.csv") 
+activityData <- read.csv(unz("./activity.zip", "activity.csv")) 
 ```
 
 ```{r}
